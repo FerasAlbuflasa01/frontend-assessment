@@ -53,6 +53,53 @@ describe('CrDetailComponent', () => {
 		expect(entries[1].textContent).toContain('SUBMIT');
 		expect(entries[2].textContent).toContain('SEND_FOR_APPROVAL');
 	});
+
+	it('approves a change request', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const approveBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__approve');
+
+		approveBtn.click();
+		await fixture.componentInstance.approve();
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.detail?.status).toBe('APPROVED');
+	});
+
+	it('rejects a change request with a reason', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const reasonInput: HTMLTextAreaElement = fixture.nativeElement.querySelector('.cr-actions__reason');
+		const rejectBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__reject-btn');
+
+		reasonInput.value = 'Not acceptable';
+		reasonInput.dispatchEvent(new Event('input'));
+		fixture.detectChanges();
+
+		expect(rejectBtn.disabled).toBe(false);
+		expect(fixture.componentInstance.rejectControl.value).toBe('Not acceptable');
+		expect(fixture.componentInstance.rejectControl.valid).toBe(true);
+
+		rejectBtn.click();
+		await fixture.componentInstance.reject();
+		fixture.detectChanges();
+
+		expect(fixture.componentInstance.detail?.status).toBe('REJECTED');
+	});
+
+	it('reject does not show to a viewer', async () => {
+		const fixture = await render(users.viewer, 'CR-1');
+		const buttonNativeElement: HTMLButtonElement | null = 
+    fixture.nativeElement.querySelector('button.reject-btn');
+  	expect(buttonNativeElement).toBeNull();
+	});
+
+		it('reject does not show to a viewer', async () => {
+		const fixture = await render(users.viewer, 'CR-1');
+		const buttonNativeElement: HTMLButtonElement | null = 
+    fixture.nativeElement.querySelector('button.reject-btn');
+  	expect(buttonNativeElement).toBeNull();
+	});
+
 	
+
 });
 

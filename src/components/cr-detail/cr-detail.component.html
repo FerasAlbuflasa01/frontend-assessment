@@ -51,7 +51,7 @@
 		</section>
 
 		<!-- Approval timeline -->
-		<section class="cr-timeline" *ngIf="canReject">
+		<section class="cr-timeline" *ngIf="canApprove || canReject">
 			<h3>Timeline</h3>
 			<ol class="cr-timeline__list">
 				<li *ngFor="let entry of timeline" class="cr-timeline__entry">
@@ -64,7 +64,7 @@
 		</section>
 
 		<!-- Actions -->
-		<section class="cr-actions">
+		<section class="cr-actions" *ngIf="canApprove || canReject">
 			<p *ngIf="actionError" class="cr-actions__error" role="alert">{{ actionError }}</p>
 
 			<button type="button" class="cr-actions__approve" [disabled]="!canApprove || submitting" (click)="approve()">Approve</button>
