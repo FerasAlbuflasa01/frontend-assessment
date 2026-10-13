@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule,Validators } from '@angular/forms';
 import { CrApiService } from '../../api/cr-api.service';
 import { SessionService } from '../../session/session.service';
 import { CrDetail, TimelineEntry } from '../../models/cr.models';
@@ -26,12 +26,13 @@ export class CrDetailComponent implements OnInit {
 	submitting = false;
 	actionError?: string;
 	// TODO: add validation so the form is invalid until a reason is entered.
-	rejectControl = new FormControl('', { nonNullable: true });
+	rejectControl = new FormControl('', { nonNullable: true , validators: [Validators.required] });
 
 	constructor(private readonly api: CrApiService, private readonly session: SessionService) {}
 
 	ngOnInit(): void {
 		void this.load();
+		console.log(this.state);
 	}
 
 	async load(): Promise<void> {
@@ -56,16 +57,23 @@ export class CrDetailComponent implements OnInit {
 	/** Approval timeline, oldest-first. */
 	get timeline(): TimelineEntry[] {
 		// TODO: return the audit entries ordered chronologically (oldest first).
-		return this.detail?.audit ?? [];
+		if (!this.detail?.audit) return [];
+  
+  // Sort explicitly by timestamp ascending (oldest date -> newest date)
+  return this.detail.audit.sort((a, b) => 
+    new Date(a.at).getTime() - new Date(b.at).getTime()  
+  );
 	}
 
 	/** Whether the current user may approve the loaded CR. */
 	get canApprove(): boolean {
 		// NOTE: this only looks at the CR status. The UI must also respect the user's permissions.
+		if(!(this.session.user?.policies?.includes("cr_a_o") )){return false;}
 		return this.detail?.status === 'PENDING_APPROVAL';
 	}
 
 	get canReject(): boolean {
+		if(!(this.session.user?.policies?.includes("cr_a_o") )){return false;}
 		return this.detail?.status === 'PENDING_APPROVAL';
 	}
 
@@ -75,12 +83,19 @@ export class CrDetailComponent implements OnInit {
 
 	async approve(): Promise<void> {
 		// TODO: perform the approve action through the API and reflect the outcome in the view.
-		throw new Error('approve() not implemented');
+		if(this.canApprove){
+		await this.api.approve(this.session.user, this.id, new Date().toISOString());
+		this.load();
+	}
 	}
 
 	async reject(): Promise<void> {
 		// TODO: require a valid rejectControl, then perform the reject action through the API and
 		//       reflect the outcome in the view.
-		throw new Error('reject() not implemented');
+		if(this.canReject && this.rejectControl.valid){
+			await this.api.reject(this.session.user, this.id, new Date().toISOString(), this.rejectControl.value);
+			this.load();
+		}
+	
 	}
 }
