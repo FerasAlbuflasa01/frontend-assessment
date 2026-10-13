@@ -51,7 +51,7 @@
 		</section>
 
 		<!-- Approval timeline -->
-		<section class="cr-timeline">
+		<section class="cr-timeline" *ngIf="canReject">
 			<h3>Timeline</h3>
 			<ol class="cr-timeline__list">
 				<li *ngFor="let entry of timeline" class="cr-timeline__entry">
@@ -69,7 +69,7 @@
 
 			<button type="button" class="cr-actions__approve" [disabled]="!canApprove || submitting" (click)="approve()">Approve</button>
 
-			<div class="cr-actions__reject" *ngIf="canReject">
+			<div class="cr-actions__reject">
 				<label>
 					Reason for rejection
 					<textarea class="cr-actions__reason" [formControl]="rejectControl"></textarea>
