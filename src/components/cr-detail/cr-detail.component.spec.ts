@@ -31,4 +31,28 @@ describe('CrDetailComponent', () => {
 		const approveBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__approve');
 		expect(approveBtn.disabled).toBe(true);
 	});
+
+	it('enables Approve for an approver on a pending CR', async () => {
+		const fixture = await render(users.approver, 'CR-1'); // approver: cr_r_o + cr_a_o; CR-1 is PENDING_APPROVAL
+		const approveBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__approve');
+		expect(approveBtn.disabled).toBe(false);
+	});
+	
+	it('disables Approve for an approver on an applied CR', async () => {
+		const fixture = await render(users.approver, 'CR-2'); // approver: cr_r_o + cr_a_o; CR-2 is APPLIED
+		const approveBtn: HTMLButtonElement = fixture.nativeElement.querySelector('.cr-actions__approve');
+		expect(approveBtn.disabled).toBe(true);
+	});
+
+	it('shows timeline entries in reverse chronological order', async () => {
+		const fixture = await render(users.approver, 'CR-1');
+		const entries: NodeListOf<HTMLElement> = fixture.nativeElement.querySelectorAll('.cr-timeline__entry');
+		expect(entries.length).toBe(3);
+		
+		expect(entries[0].textContent).toContain('CREATE');
+		expect(entries[1].textContent).toContain('SUBMIT');
+		expect(entries[2].textContent).toContain('SEND_FOR_APPROVAL');
+	});
+	
 });
+

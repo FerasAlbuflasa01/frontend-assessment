@@ -30,4 +30,21 @@ describe('CrListComponent', () => {
 		expect(fixture.nativeElement.querySelector('.cr-list__empty')).not.toBeNull();
 		expect(fixture.nativeElement.querySelector('.cr-list__table')).toBeNull();
 	});
+
+	it(' filters the list by status', async()=>{
+		const fixture = await render(users.approver);
+		const select: HTMLSelectElement = fixture.nativeElement.querySelector('.cr-list__filter');
+		select.value = 'PENDING_APPROVAL';
+		select.dispatchEvent(new Event('change'));
+		fixture.detectChanges();
+		expect(fixture.nativeElement.querySelectorAll('.cr-list__row').length).toBe(1); 
+	});
+	it('filter select a statues with zero record', async()=>{
+		const fixture = await render(users.approver);
+		const select: HTMLSelectElement = fixture.nativeElement.querySelector('.cr-list__filter');
+		select.value = 'Cancelled';
+		select.dispatchEvent(new Event('change'));
+		fixture.detectChanges();
+		expect(fixture.nativeElement.querySelectorAll('.cr-list__row').length).toBe(0); 
+	});
 });
