@@ -32,7 +32,7 @@ export class CrDetailComponent implements OnInit {
 
 	ngOnInit(): void {
 		void this.load();
-		console.log(this.state);
+		
 	}
 
 	async load(): Promise<void> {
@@ -86,6 +86,7 @@ export class CrDetailComponent implements OnInit {
 		if(this.canApprove){
 		await this.api.approve(this.session.user, this.id, new Date().toISOString());
 		await this.load();
+		
 	}
 	}
 
