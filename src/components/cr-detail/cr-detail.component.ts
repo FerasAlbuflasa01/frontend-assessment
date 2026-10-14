@@ -32,7 +32,6 @@ export class CrDetailComponent implements OnInit {
 
 	ngOnInit(): void {
 		void this.load();
-		console.log(this.state);
 	}
 
 	async load(): Promise<void> {
@@ -82,20 +81,30 @@ export class CrDetailComponent implements OnInit {
 	}
 
 	async approve(): Promise<void> {
-		// TODO: perform the approve action through the API and reflect the outcome in the view.
-		if(this.canApprove){
-		await this.api.approve(this.session.user, this.id, new Date().toISOString());
-		this.load();
-	}
+		if (!this.canApprove) return;
+		this.submitting = true;
+		this.actionError = undefined;
+		try {
+			await this.api.approve(this.session.user, this.id, new Date().toISOString());
+			await this.load();
+		} catch (err) {
+			this.actionError = (err as Error).message;
+		} finally {
+			this.submitting = false;
+		}
 	}
 
 	async reject(): Promise<void> {
-		// TODO: require a valid rejectControl, then perform the reject action through the API and
-		//       reflect the outcome in the view.
-		if(this.canReject && this.rejectControl.valid){
+		if (!this.canReject || !this.rejectControl.valid) return;
+		this.submitting = true;
+		this.actionError = undefined;
+		try {
 			await this.api.reject(this.session.user, this.id, new Date().toISOString(), this.rejectControl.value);
-			this.load();
+			await this.load();
+		} catch (err) {
+			this.actionError = (err as Error).message;
+		} finally {
+			this.submitting = false;
 		}
-	
 	}
 }
