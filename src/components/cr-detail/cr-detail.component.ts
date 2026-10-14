@@ -81,6 +81,7 @@ export class CrDetailComponent implements OnInit {
 	}
 
 	async approve(): Promise<void> {
+		
 		if (!this.canApprove) return;
 		this.submitting = true;
 		this.actionError = undefined;
@@ -92,6 +93,7 @@ export class CrDetailComponent implements OnInit {
 		} finally {
 			this.submitting = false;
 		}
+
 	}
 
 	async reject(): Promise<void> {
@@ -101,10 +103,12 @@ export class CrDetailComponent implements OnInit {
 		try {
 			await this.api.reject(this.session.user, this.id, new Date().toISOString(), this.rejectControl.value);
 			await this.load();
+
 		} catch (err) {
 			this.actionError = (err as Error).message;
 		} finally {
 			this.submitting = false;
+
 		}
 	}
 }
