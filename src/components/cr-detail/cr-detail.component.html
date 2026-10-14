@@ -51,7 +51,7 @@
 		</section>
 
 		<!-- Approval timeline -->
-		<section class="cr-timeline" *ngIf="canReject">
+		<section class="cr-timeline" *ngIf="canApprove || canReject">
 			<h3>Timeline</h3>
 			<ol class="cr-timeline__list">
 				<li *ngFor="let entry of timeline" class="cr-timeline__entry">

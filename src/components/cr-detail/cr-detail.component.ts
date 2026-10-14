@@ -32,7 +32,7 @@ export class CrDetailComponent implements OnInit {
 
 	ngOnInit(): void {
 		void this.load();
-		console.log(this.state);
+		
 	}
 
 	async load(): Promise<void> {
@@ -85,7 +85,8 @@ export class CrDetailComponent implements OnInit {
 		// TODO: perform the approve action through the API and reflect the outcome in the view.
 		if(this.canApprove){
 		await this.api.approve(this.session.user, this.id, new Date().toISOString());
-		this.load();
+		await this.load();
+		
 	}
 	}
 
@@ -94,7 +95,7 @@ export class CrDetailComponent implements OnInit {
 		//       reflect the outcome in the view.
 		if(this.canReject && this.rejectControl.valid){
 			await this.api.reject(this.session.user, this.id, new Date().toISOString(), this.rejectControl.value);
-			this.load();
+			await this.load();
 		}
 	
 	}
